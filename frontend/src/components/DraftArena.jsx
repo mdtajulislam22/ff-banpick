@@ -28,28 +28,6 @@ function DraftArena({
         socket.id === room?.currentTurn
 
 
-
-    // TIMER
-    // useEffect(() => {
-
-    //     const timer = setInterval(() => {
-
-    //         setTimeLeft(prev => {
-
-    //             if (prev <= 1) {
-    //                 return 30
-    //             }
-
-    //             return prev - 1
-
-    //         })
-
-    //     }, 1000)
-
-    //     return () => clearInterval(timer)
-
-    // }, [])
-
     const handleConfirmBan = () => {
 
         if (!canInteract) return
@@ -130,14 +108,33 @@ function DraftArena({
     const isPickPhase =
         room?.currentAction === 'pick'
 
+    const allPickedCharacters = [
+
+        ...(room?.pickedCharacters?.blue || []),
+
+        ...(room?.pickedCharacters?.red || []),
+
+    ]
+
 
     const mySocketId = socket.id
 
     const canInteract =
         mySocketId === room?.currentTurn
 
+    const blueTeam =
+        room?.pickedCharacters?.blue || []
 
+    const redTeam =
+        room?.pickedCharacters?.red || []
 
+    const getCharacterById = (id) => {
+
+        return characters.find(
+            c => c.id === id
+        )
+
+    }
 
     return (
 
@@ -228,14 +225,50 @@ function DraftArena({
                     {/* PICK SLOTS */}
                     <div className="space-y-3">
 
-                        {Array.from({ length: 4 }).map((_, i) => (
+                        {Array.from({ length: 4 }).map((_, i) => {
 
-                            <div
-                                key={i}
-                                className="h-24 bg-black/30 border border-cyan-400/20 rounded-xl"
-                            ></div>
+                            const pickedId =
+                                blueTeam[i]
 
-                        ))}
+                            const pickedChar =
+                                getCharacterById(pickedId)
+
+                            return (
+
+                                <div
+                                    key={i}
+                                    className="h-24 bg-black/30 border border-cyan-400/20 rounded-xl overflow-hidden"
+                                >
+
+                                    {pickedChar ? (
+
+                                        <div className="relative w-full h-full">
+
+                                            <img
+                                                src={pickedChar.image}
+                                                alt={pickedChar.name}
+                                                className="w-full h-full object-cover"
+                                            />
+
+                                            <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
+
+                                            <div className="absolute bottom-2 left-2">
+
+                                                <p className="font-bold">
+                                                    {pickedChar.name}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    ) : null}
+
+                                </div>
+
+                            )
+
+                        })}
 
                     </div>
 
@@ -360,6 +393,8 @@ ${isMyTurn
 
                             const isBanned =
                                 room?.bannedCharacters?.includes(char.id)
+                            const isPicked =
+                                allPickedCharacters.includes(char.id)
                             return (
 
                                 <motion.div
@@ -370,6 +405,8 @@ ${isMyTurn
                                         if (!canInteract) return
 
                                         if (isBanned) return
+
+                                        if (isPicked) return
 
                                         setSelectedCharId(char.id)
 
@@ -384,9 +421,11 @@ ${isMyTurn
                                             : 'border-[#1a2332]'
                                         }
 
-    ${isBanned
+${isBanned
                                             ? 'opacity-40 grayscale cursor-not-allowed'
-                                            : 'cursor-pointer'
+                                            : isPicked
+                                                ? 'opacity-50 cursor-not-allowed'
+                                                : 'cursor-pointer'
                                         }
     `}
                                 >
@@ -453,6 +492,21 @@ ${isMyTurn
                                                 <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 rotate-45 shadow-[0_0_20px_red]"></div>
 
                                                 <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-45 shadow-[0_0_20px_red]"></div>
+
+                                            </div>
+
+                                        </div>
+
+                                    )}
+
+                                    {/* PICKED */}
+                                    {isPicked && !isBanned && (
+
+                                        <div className="absolute inset-0 bg-cyan-500/20 border-4 border-cyan-400">
+
+                                            <div className="absolute top-2 left-2 px-2 py-1 bg-cyan-500 text-black text-xs font-black rounded">
+
+                                                PICKED
 
                                             </div>
 
@@ -542,14 +596,50 @@ ${isMyTurn
                     {/* PICK SLOTS */}
                     <div className="space-y-3">
 
-                        {Array.from({ length: 4 }).map((_, i) => (
+                        {Array.from({ length: 4 }).map((_, i) => {
 
-                            <div
-                                key={i}
-                                className="h-24 bg-black/30 border border-red-400/20 rounded-xl"
-                            ></div>
+                            const pickedId =
+                                redTeam[i]
 
-                        ))}
+                            const pickedChar =
+                                getCharacterById(pickedId)
+
+                            return (
+
+                                <div
+                                    key={i}
+                                    className="h-24 bg-black/30 border border-red-400/20 rounded-xl overflow-hidden"
+                                >
+
+                                    {pickedChar ? (
+
+                                        <div className="relative w-full h-full">
+
+                                            <img
+                                                src={pickedChar.image}
+                                                alt={pickedChar.name}
+                                                className="w-full h-full object-cover"
+                                            />
+
+                                            <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
+
+                                            <div className="absolute bottom-2 left-2">
+
+                                                <p className="font-bold">
+                                                    {pickedChar.name}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    ) : null}
+
+                                </div>
+
+                            )
+
+                        })}
 
                     </div>
 
