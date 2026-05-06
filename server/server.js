@@ -6,6 +6,7 @@ const cors = require('cors')
 const app = express()
 
 app.use(cors())
+
 app.get('/', (req, res) => {
     res.send('FF BanPick Socket Server Running')
 })
@@ -15,42 +16,110 @@ const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
         origin: '*',
+        methods: ['GET', 'POST']
     }
 })
 
 const rooms = {}
-function startCountdown(roomId) {
 
-    if (!rooms[roomId]) return
+const PHASES = [
+    'waiting',
+    'countdown',
+    'coin_toss',
+    'active_ban_1',
+    'active_ban_2',
+]
 
-    rooms[roomId].phase = 'countdown'
+function roomExists(roomId) {
+    return !!rooms[roomId]
+}
 
-    rooms[roomId].countdown = 5
+function emitRoom(roomId) {
+
+    if (!roomExists(roomId)) return
 
     io.to(roomId).emit(
         'room_update',
         rooms[roomId]
     )
 
-    const countdownInterval = setInterval(() => {
+}
 
-        if (!rooms[roomId]) {
+function clearRoomTimers(roomId) {
 
-            clearInterval(countdownInterval)
+    if (!roomExists(roomId)) return
+
+    if (rooms[roomId].interval) {
+        clearInterval(rooms[roomId].interval)
+        rooms[roomId].interval = null
+    }
+
+    if (rooms[roomId].timeout) {
+        clearTimeout(rooms[roomId].timeout)
+        rooms[roomId].timeout = null
+    }
+
+}
+
+function setPhase(roomId, phase) {
+
+    if (!roomExists(roomId)) return
+
+    rooms[roomId].phase = phase
+
+    emitRoom(roomId)
+
+}
+
+function resetRoom(roomId) {
+
+    if (!roomExists(roomId)) return
+
+    clearRoomTimers(roomId)
+
+    rooms[roomId].phase = 'waiting'
+    rooms[roomId].countdown = 5
+    rooms[roomId].timer = 30
+    rooms[roomId].currentTurn = null
+    rooms[roomId].tossWinner = null
+    rooms[roomId].coinResult = 'FF'
+    rooms[roomId].flipping = false
+
+    emitRoom(roomId)
+
+}
+
+function startCountdown(roomId) {
+
+    if (!roomExists(roomId)) return
+
+    clearRoomTimers(roomId)
+
+    rooms[roomId].phase = 'countdown'
+    rooms[roomId].countdown = 5
+
+    emitRoom(roomId)
+
+    rooms[roomId].interval = setInterval(() => {
+
+        if (!roomExists(roomId)) {
+            return
+        }
+
+        if (rooms[roomId].players.length < 2) {
+
+            resetRoom(roomId)
             return
 
         }
 
         rooms[roomId].countdown--
 
-        io.to(roomId).emit(
-            'room_update',
-            rooms[roomId]
-        )
+        emitRoom(roomId)
 
         if (rooms[roomId].countdown <= 0) {
 
-            clearInterval(countdownInterval)
+            clearRoomTimers(roomId)
 
             startCoinToss(roomId)
 
@@ -59,22 +128,28 @@ function startCountdown(roomId) {
     }, 1000)
 
 }
+
 function startCoinToss(roomId) {
 
-    if (!rooms[roomId]) return
+    if (!roomExists(roomId)) return
+
+    clearRoomTimers(roomId)
 
     rooms[roomId].phase = 'coin_toss'
-
     rooms[roomId].flipping = true
 
-    io.to(roomId).emit(
-        'room_update',
-        rooms[roomId]
-    )
+    emitRoom(roomId)
 
-    setTimeout(() => {
+    rooms[roomId].timeout = setTimeout(() => {
 
-        if (!rooms[roomId]) return
+        if (!roomExists(roomId)) return
+
+        if (rooms[roomId].players.length < 2) {
+
+            resetRoom(roomId)
+            return
+
+        }
 
         const winnerIndex =
             Math.random() > 0.5 ? 0 : 1
@@ -95,46 +170,55 @@ function startCoinToss(roomId) {
 
         rooms[roomId].flipping = false
 
-        // START FIRST PHASE
-        rooms[roomId].phase =
-            'active_ban_1'
+        emitRoom(roomId)
 
-        rooms[roomId].timer = 60
-
-        io.to(roomId).emit(
-            'room_update',
-            rooms[roomId]
+        startDraftPhase(
+            roomId,
+            'active_ban_1',
+            winner.socketId
         )
-
-        startDraftTimer(roomId)
 
     }, 3000)
 
 }
-function startDraftTimer(roomId) {
 
-    const timerInterval = setInterval(() => {
+function startDraftPhase(
+    roomId,
+    phase,
+    currentTurn
+) {
 
-        if (!rooms[roomId]) {
+    if (!roomExists(roomId)) return
 
-            clearInterval(timerInterval)
+    clearRoomTimers(roomId)
+
+    rooms[roomId].phase = phase
+    rooms[roomId].currentTurn = currentTurn
+    rooms[roomId].timer = 30
+
+    emitRoom(roomId)
+
+    rooms[roomId].interval = setInterval(() => {
+
+        if (!roomExists(roomId)) return
+
+        if (rooms[roomId].players.length < 2) {
+
+            resetRoom(roomId)
             return
 
         }
 
         rooms[roomId].timer--
 
-        io.to(roomId).emit(
-            'room_update',
-            rooms[roomId]
-        )
+        emitRoom(roomId)
 
         if (rooms[roomId].timer <= 0) {
 
-            clearInterval(timerInterval)
+            clearRoomTimers(roomId)
 
             // later:
-            // auto skip
+            // auto ban
             // next phase
 
         }
@@ -147,15 +231,19 @@ io.on('connection', (socket) => {
 
     console.log('Connected:', socket.id)
 
-    socket.on('join_room', ({ roomId, player }) => {
+    socket.on('join_room', ({
+        roomId,
+        player
+    }) => {
 
-        roomId = roomId.toLowerCase().trim()
+        roomId =
+            roomId.toLowerCase().trim()
 
         socket.join(roomId)
 
         socket.roomId = roomId
 
-        if (!rooms[roomId]) {
+        if (!roomExists(roomId)) {
 
             rooms[roomId] = {
 
@@ -165,7 +253,7 @@ io.on('connection', (socket) => {
 
                 countdown: 5,
 
-                timer: 60,
+                timer: 30,
 
                 currentTurn: null,
 
@@ -179,13 +267,22 @@ io.on('connection', (socket) => {
 
                 activePicks: [],
 
+                passiveBans: [],
+
+                passivePicks: [],
+
+                interval: null,
+
+                timeout: null,
+
             }
 
         }
 
-        const exists = rooms[roomId].players.find(
-            p => p.socketId === socket.id
-        )
+        const exists =
+            rooms[roomId].players.find(
+                p => p.socketId === socket.id
+            )
 
         if (!exists) {
 
@@ -193,43 +290,72 @@ io.on('connection', (socket) => {
                 socketId: socket.id,
                 name: player.name,
             })
-            if (
-                rooms[roomId].players.length === 2 &&
-                rooms[roomId].phase === 'waiting'
-            ) {
-
-                startCountdown(roomId)
-
-            }
 
         }
 
-        io.to(roomId).emit('room_update', rooms[roomId])
+        emitRoom(roomId)
+
+        // START MATCH
+        if (
+            rooms[roomId].players.length === 2 &&
+            rooms[roomId].phase === 'waiting'
+        ) {
+
+            startCountdown(roomId)
+
+        }
 
     })
 
-
-
     socket.on('disconnect', () => {
 
-        console.log('Disconnected:', socket.id)
+        try {
 
-        const roomId = socket.roomId
+            console.log(
+                'Disconnected:',
+                socket.id
+            )
 
-        if (roomId && rooms[roomId]) {
+            const roomId = socket.roomId
+
+            if (!roomExists(roomId)) return
 
             rooms[roomId].players =
                 rooms[roomId].players.filter(
                     p => p.socketId !== socket.id
                 )
 
-            io.to(roomId).emit('room_update', rooms[roomId])
+            // ONE PLAYER LEFT
+            if (rooms[roomId].players.length === 1) {
 
-            if (rooms[roomId].players.length === 0) {
-                delete rooms[roomId]
+                resetRoom(roomId)
+
             }
 
-            rooms[roomId].phase = 'waiting'
+            emitRoom(roomId)
+
+            // DELETE EMPTY ROOM
+            if (
+                rooms[roomId].players.length === 0
+            ) {
+
+                clearRoomTimers(roomId)
+
+                delete rooms[roomId]
+
+                console.log(
+                    'Deleted room:',
+                    roomId
+                )
+
+            }
+
+        } catch (err) {
+
+            console.log(
+                'Disconnect Error:',
+                err
+            )
 
         }
 
@@ -237,6 +363,11 @@ io.on('connection', (socket) => {
 
 })
 
-server.listen(3001, () => {
-    console.log('Server running on 3001')
+const PORT =
+    process.env.PORT || 3001
+
+server.listen(PORT, () => {
+    console.log(
+        `Server running on ${PORT}`
+    )
 })

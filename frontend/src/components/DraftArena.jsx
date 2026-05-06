@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { socket } from '../socket'
 import {
     Ban,
     Crown,
@@ -80,35 +81,7 @@ function DraftArena({
     }
 
     // WAITING FOR OPPONENT
-    if (room?.phase === 'waiting') {
 
-        return (
-
-            <div className="w-full h-screen flex items-center justify-center text-white">
-
-                <div className="text-center">
-
-                    <h1 className="text-5xl font-black mb-5">
-                        WAITING FOR OPPONENT
-                    </h1>
-
-                    <p className="text-gray-400 mb-3">
-                        <p className="text-cyan-400 text-xl font-bold">
-                            {room?.players?.[0]?.name}
-                        </p>
-                        Share room code:
-                        <span className="text-cyan-400 ml-2">
-                            {roomId}
-                        </span>
-                    </p>
-
-                </div>
-
-            </div>
-
-        )
-
-    }
 
     // COUNTDOWN
     if (room?.phase === 'countdown') {
@@ -154,6 +127,12 @@ function DraftArena({
             )
     const isBanPhase =
         room?.phase?.includes('ban')
+
+
+    const mySocketId = socket.id
+
+    const canInteract =
+        mySocketId === room?.currentTurn
 
 
 
@@ -266,24 +245,7 @@ function DraftArena({
                     {/* TOP */}
                     <div className="flex flex-col items-center">
 
-                        {/* ROOM */}
-                        <div className="absolute top-5 left-5 bg-black/40 border border-white/10 px-5 py-2 rounded-xl backdrop-blur-xl">
-
-                            Room:
-                            <span className="text-cyan-400 ml-2">
-                                {roomId}
-                            </span>
-
-                        </div>
-
-                        {/* INVITE */}
-                        <button className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-xl font-bold flex items-center gap-2">
-
-                            <Share2 size={16} />
-
-                            Invite
-
-                        </button>
+                        {/* here was roomid and invite link */}
 
                         {/* PHASE */}
                         <div className="relative mb-5">
@@ -352,6 +314,28 @@ function DraftArena({
 
                     </div>
 
+                    {room?.phase === 'waiting' && (
+
+                        <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+
+                            <div className="text-center">
+
+                                <h1 className="text-6xl font-black text-red-500 mb-4">
+                                    WAITING FOR OPPONENT
+                                </h1>
+
+                                <p className="text-gray-300 text-xl">
+                                    Share Room ID:
+                                    <span className="text-cyan-400 ml-2">
+                                        {roomId}
+                                    </span>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    )}
                     {/* CHARACTER GRID */}
                     <div className="grid grid-cols-5 gap-3 flex-1 overflow-y-auto pr-2">
 
@@ -369,6 +353,8 @@ function DraftArena({
                                     key={char.id}
 
                                     onClick={() => {
+
+                                        if (!canInteract) return
 
                                         if (isBanned) return
 
@@ -484,8 +470,10 @@ function DraftArena({
 
                             onClick={handleConfirmBan}
 
-                            disabled={selectedCharId === null}
-
+                            disabled={
+                                selectedCharId === null ||
+                                !canInteract
+                            }
                             className={`px-16 py-4 rounded-2xl text-xl font-black tracking-widest border
 
               ${selectedCharId !== null
@@ -550,6 +538,25 @@ function DraftArena({
                         ))}
 
                     </div>
+
+                    {/* ROOM */}
+                    <div className="absolute top-5 left-5 bg-black/40 border border-white/10 px-5 py-2 rounded-xl backdrop-blur-xl">
+
+                        Room:
+                        <span className="text-cyan-400 ml-2">
+                            {roomId}
+                        </span>
+
+                    </div>
+
+                    {/* INVITE */}
+                    <button className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-xl font-bold flex items-center gap-2">
+
+                        <Share2 size={16} />
+
+                        Invite
+
+                    </button>
 
                 </div>
 
