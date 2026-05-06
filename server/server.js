@@ -21,6 +21,97 @@ const io = new Server(server, {
 })
 
 const rooms = {}
+const DRAFT_FLOW = [
+
+    // ACTIVE BAN
+    {
+        action: 'ban',
+        type: 'active',
+        turn: 0,
+        amount: 1,
+    },
+
+    {
+        action: 'ban',
+        type: 'active',
+        turn: 1,
+        amount: 1,
+    },
+
+    // ACTIVE PICK
+    {
+        action: 'pick',
+        type: 'active',
+        turn: 0,
+        amount: 1,
+    },
+
+    {
+        action: 'pick',
+        type: 'active',
+        turn: 1,
+        amount: 1,
+    },
+
+    // PASSIVE BAN
+    {
+        action: 'ban',
+        type: 'passive',
+        turn: 1,
+        amount: 1,
+    },
+
+    {
+        action: 'ban',
+        type: 'passive',
+        turn: 0,
+        amount: 2,
+    },
+
+    {
+        action: 'ban',
+        type: 'passive',
+        turn: 1,
+        amount: 1,
+    },
+
+    // PASSIVE PICK
+    {
+        action: 'pick',
+        type: 'passive',
+        turn: 0,
+        amount: 1,
+    },
+
+    {
+        action: 'pick',
+        type: 'passive',
+        turn: 1,
+        amount: 2,
+    },
+
+    {
+        action: 'pick',
+        type: 'passive',
+        turn: 0,
+        amount: 1,
+    },
+
+    {
+        action: 'pick',
+        type: 'passive',
+        turn: 1,
+        amount: 1,
+    },
+
+    {
+        action: 'pick',
+        type: 'passive',
+        turn: 0,
+        amount: 1,
+    },
+
+]
 
 const PHASES = [
     'waiting',
@@ -172,85 +263,170 @@ function startCoinToss(roomId) {
 
         emitRoom(roomId)
 
-        startDraftPhase(
-            roomId,
-            'active_ban_1',
-            winner.socketId
-        )
+        // startDraftPhase(
+        //     roomId,
+        //     'active_ban_1',
+        //     winner.socketId
+        // )
+        rooms[roomId].flowIndex = 0
+
+        startNextFlow(roomId)
 
     }, 3000)
 
 }
-
-function startDraftPhase(
-    roomId,
-    phase,
-    currentTurn
-) {
+function startNextFlow(roomId) {
 
     if (!roomExists(roomId)) return
 
     clearRoomTimers(roomId)
 
-    rooms[roomId].phase = phase
-    rooms[roomId].currentTurn = currentTurn
-    rooms[roomId].timer = 30
+    const room = rooms[roomId]
+
+    const flow =
+        DRAFT_FLOW[room.flowIndex]
+
+    // FINISHED
+    if (!flow) {
+
+        room.phase = 'finished'
+
+        emitRoom(roomId)
+
+        return
+
+    }
+
+    room.phase =
+        `${flow.action}_${flow.type}`
+
+    room.currentAction =
+        flow.action
+
+    room.currentType =
+        flow.type
+
+    room.currentActionCount = 0
+
+    room.timer = 30
+
+    // TURN
+    const tossWinner =
+        room.players.find(
+            p => p.socketId === room.tossWinner
+        )
+
+    const otherPlayer =
+        room.players.find(
+            p => p.socketId !== room.tossWinner
+        )
+
+    room.currentTurn =
+        flow.turn === 0
+            ? tossWinner.socketId
+            : otherPlayer.socketId
 
     emitRoom(roomId)
 
-    rooms[roomId].interval = setInterval(() => {
+    room.interval = setInterval(() => {
 
         if (!roomExists(roomId)) return
 
-        if (rooms[roomId].players.length < 2) {
+        if (room.players.length < 2) {
 
             resetRoom(roomId)
             return
 
         }
 
-        rooms[roomId].timer--
+        room.timer--
 
         emitRoom(roomId)
 
-        if (rooms[roomId].timer <= 0) {
+        // AUTO PASS
+        if (room.timer <= 0) {
 
             clearRoomTimers(roomId)
 
-            const currentPlayer =
-                rooms[roomId].currentTurn
+            room.flowIndex++
 
-            const otherPlayer =
-                rooms[roomId].players.find(
-                    p => p.socketId !== currentPlayer
-                )
-
-            // AUTO PASS
-            if (
-                rooms[roomId].phase === 'active_ban_1'
-            ) {
-
-                startDraftPhase(
-                    roomId,
-                    'active_ban_2',
-                    otherPlayer.socketId
-                )
-
-            }
-            else {
-
-                rooms[roomId].phase =
-                    'finished'
-
-                emitRoom(roomId)
-
-            }
+            startNextFlow(roomId)
 
         }
 
     }, 1000)
 
 }
+
+// function startDraftPhase(
+//     roomId,
+//     phase,
+//     currentTurn
+// ) {
+
+//     if (!roomExists(roomId)) return
+
+//     clearRoomTimers(roomId)
+
+//     rooms[roomId].phase = phase
+//     rooms[roomId].currentTurn = currentTurn
+//     rooms[roomId].timer = 30
+
+//     emitRoom(roomId)
+
+//     rooms[roomId].interval = setInterval(() => {
+
+//         if (!roomExists(roomId)) return
+
+//         if (rooms[roomId].players.length < 2) {
+
+//             resetRoom(roomId)
+//             return
+
+//         }
+
+//         rooms[roomId].timer--
+
+//         emitRoom(roomId)
+
+//         if (rooms[roomId].timer <= 0) {
+
+//             clearRoomTimers(roomId)
+
+//             const currentPlayer =
+//                 rooms[roomId].currentTurn
+
+//             const otherPlayer =
+//                 rooms[roomId].players.find(
+//                     p => p.socketId !== currentPlayer
+//                 )
+
+//             // AUTO PASS
+//             if (
+//                 rooms[roomId].phase === 'active_ban_1'
+//             ) {
+
+//                 startDraftPhase(
+//                     roomId,
+//                     'active_ban_2',
+//                     otherPlayer.socketId
+//                 )
+
+//             }
+//             else {
+
+//                 rooms[roomId].phase =
+//                     'finished'
+
+//                 emitRoom(roomId)
+
+//             }
+
+//         }
+
+//     }, 1000)
+
+// }
 
 io.on('connection', (socket) => {
 
@@ -288,13 +464,22 @@ io.on('connection', (socket) => {
 
                 flipping: false,
 
-                activeBans: [],
+                // activeBans: [],
 
-                activePicks: [],
+                // activePicks: [],
 
-                passiveBans: [],
+                // passiveBans: [],
 
-                passivePicks: [],
+                // passivePicks: [],
+                bannedCharacters: [],
+                pickedCharacters: {
+                    blue: [],
+                    red: [],
+                },
+
+                flowIndex: 0,
+
+                currentActionCount: 0,
 
                 interval: null,
 
@@ -331,7 +516,8 @@ io.on('connection', (socket) => {
         }
 
     })
-    socket.on('ban_character', ({
+
+    socket.on('draft_action', ({
         characterId
     }) => {
 
@@ -343,6 +529,11 @@ io.on('connection', (socket) => {
 
             const room = rooms[roomId]
 
+            const flow =
+                DRAFT_FLOW[room.flowIndex]
+
+            if (!flow) return
+
             // NOT YOUR TURN
             if (
                 room.currentTurn !== socket.id
@@ -350,54 +541,135 @@ io.on('connection', (socket) => {
                 return
             }
 
-            // already banned
+            // ALREADY BANNED
             if (
-                room.activeBans.includes(characterId)
+                room.bannedCharacters.includes(characterId)
             ) {
                 return
             }
 
-            // BAN CHARACTER
-            room.activeBans.push(characterId)
+            // BAN
+            if (flow.action === 'ban') {
 
-            // SWITCH TURN
-            const otherPlayer =
-                room.players.find(
-                    p => p.socketId !== socket.id
+                room.bannedCharacters.push(
+                    characterId
                 )
 
-            // NEXT PHASE
+            }
+
+            // PICK
+            if (flow.action === 'pick') {
+
+                const team =
+                    socket.id === room.tossWinner
+                        ? 'blue'
+                        : 'red'
+
+                room.pickedCharacters[team]
+                    .push(characterId)
+
+            }
+
+            room.currentActionCount++
+
+            // STEP COMPLETE
             if (
-                room.phase === 'active_ban_1'
+                room.currentActionCount >=
+                flow.amount
             ) {
 
-                startDraftPhase(
-                    roomId,
-                    'active_ban_2',
-                    otherPlayer.socketId
-                )
+                clearRoomTimers(roomId)
+
+                room.flowIndex++
+
+                startNextFlow(roomId)
 
             }
             else {
 
-                clearRoomTimers(roomId)
+                room.timer = 30
 
-                room.phase = 'finished'
+                emitRoom(roomId)
 
             }
-
-            emitRoom(roomId)
 
         } catch (err) {
 
             console.log(
-                'Ban Error:',
+                'Draft Action Error:',
                 err
             )
 
         }
 
     })
+    // socket.on('ban_character', ({
+    //     characterId
+    // }) => {
+
+    //     try {
+
+    //         const roomId = socket.roomId
+
+    //         if (!roomExists(roomId)) return
+
+    //         const room = rooms[roomId]
+
+    //         // NOT YOUR TURN
+    //         if (
+    //             room.currentTurn !== socket.id
+    //         ) {
+    //             return
+    //         }
+
+    //         // already banned
+    //         if (
+    //             room.activeBans.includes(characterId)
+    //         ) {
+    //             return
+    //         }
+
+    //         // BAN CHARACTER
+    //         room.activeBans.push(characterId)
+
+    //         // SWITCH TURN
+    //         const otherPlayer =
+    //             room.players.find(
+    //                 p => p.socketId !== socket.id
+    //             )
+
+    //         // NEXT PHASE
+    //         if (
+    //             room.phase === 'active_ban_1'
+    //         ) {
+
+    //             // startDraftPhase(
+    //             //     roomId,
+    //             //     'active_ban_2',
+    //             //     otherPlayer.socketId
+    //             // )
+
+    //         }
+    //         else {
+
+    //             clearRoomTimers(roomId)
+
+    //             room.phase = 'finished'
+
+    //         }
+
+    //         emitRoom(roomId)
+
+    //     } catch (err) {
+
+    //         console.log(
+    //             'Ban Error:',
+    //             err
+    //         )
+
+    //     }
+
+    // })
 
     socket.on('disconnect', () => {
 

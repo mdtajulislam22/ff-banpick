@@ -56,7 +56,7 @@ function DraftArena({
 
         if (selectedCharId === null) return
 
-        socket.emit('ban_character', {
+        socket.emit('draft_action', {
             characterId: selectedCharId
         })
 
@@ -125,7 +125,10 @@ function DraftArena({
                 c => c.type === 'passive'
             )
     const isBanPhase =
-        room?.phase?.includes('ban')
+        room?.currentAction === 'ban'
+
+    const isPickPhase =
+        room?.currentAction === 'pick'
 
 
     const mySocketId = socket.id
@@ -356,8 +359,7 @@ ${isMyTurn
                                 selectedCharId === char.id
 
                             const isBanned =
-                                room?.activeBans?.includes(char.id)
-
+                                room?.bannedCharacters?.includes(char.id)
                             return (
 
                                 <motion.div
@@ -494,8 +496,9 @@ ${isMyTurn
               `}
                         >
 
-                            CONFIRM BAN
-
+                            {isBanPhase
+                                ? 'CONFIRM BAN'
+                                : 'CONFIRM PICK'}
                         </motion.button>
 
                     </div>
