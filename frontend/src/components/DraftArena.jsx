@@ -566,7 +566,7 @@ ${isBanned
                                 <div>
 
                                     <h1 className="text-4xl font-black text-cyan-400 mb-8">
-                                        BLUE TEAM
+                                        {room?.players?.[0]?.name}
                                     </h1>
 
                                     <div className="space-y-4">
@@ -645,7 +645,7 @@ ${isBanned
                                 <div>
 
                                     <h1 className="text-4xl font-black text-red-400 mb-8 text-right">
-                                        RED TEAM
+                                        {room?.players?.[1]?.name}
                                     </h1>
 
                                     <div className="space-y-4">

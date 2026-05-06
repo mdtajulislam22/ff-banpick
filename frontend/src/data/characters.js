@@ -122,6 +122,14 @@ export const characters = [
         status: 'available'
     },
     {
+        id: 16,
+        name: 'A-PATROA',
+        image: '/characters/16.a-patroa.png',
+        skillImage: '/characters/16.a-patroa_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
         id: 17,
         name: 'IRIS',
         image: '/characters/17.iris.png',
@@ -249,4 +257,268 @@ export const characters = [
         type: 'active',
         status: 'available'
     },
+    {
+        id: 33,
+        name: 'DASHA',
+        image: '/characters/33.dasha.png',
+        skillImage: '/characters/33.dasha_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 34,
+        name: 'K',
+        image: '/characters/34.k.png',
+        skillImage: '/characters/34.k_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 35,
+        name: 'LUQUETA',
+        image: '/characters/35.luqueta.png',
+        skillImage: '/characters/35.luqueta_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 36,
+        name: 'KELLY',
+        image: '/characters/36.kelly.png',
+        skillImage: '/characters/36.kelly_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 37,
+        name: 'HAYATO',
+        image: '/characters/37.hayato.png',
+        skillImage: '/characters/37.hayato_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 38,
+        name: 'MOCO',
+        image: '/characters/38.moco.png',
+        skillImage: '/characters/38.moco_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 39,
+        name: 'STEFFIE',
+        image: '/characters/39.steffie.png',
+        skillImage: '/characters/39.steffie_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 40,
+        name: 'MISHA',
+        image: '/characters/40.misha.png',
+        skillImage: '/characters/40.misha_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 41,
+        name: 'MAXIM',
+        image: '/characters/41.maxim.png',
+        skillImage: '/characters/41.maxim_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 42,
+        name: 'ANDREW',
+        image: '/characters/42.andrew.png',
+        skillImage: '/characters/42.andrew_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 43,
+        name: 'LILA',
+        image: '/characters/43.lila.png',
+        skillImage: '/characters/43.lila_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 44,
+        name: 'CAROLINE',
+        image: '/characters/44.caroline.png',
+        skillImage: '/characters/44.caroline_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 45,
+        name: 'LAURA',
+        image: '/characters/45.laura.png',
+        skillImage: '/characters/45.laura_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 46,
+        name: 'RAFAEL',
+        image: '/characters/46.rafael.png',
+        skillImage: '/characters/46.rafael_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 47,
+        name: 'ALOK',
+        image: '/characters/47.alok.png',
+        skillImage: '/characters/47.alok_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 48,
+        name: 'JOTA',
+        image: '/characters/48.jota.png',
+        skillImage: '/characters/48.jota_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 49,
+        name: 'CLU',
+        image: '/characters/49.clu.png',
+        skillImage: '/characters/49.clu_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 50,
+        name: 'WOLFRAHH',
+        image: '/characters/50.wolfrahh.png',
+        skillImage: '/characters/50.wolfrahh_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 51,
+        name: 'JAI',
+        image: '/characters/51.jai.png',
+        skillImage: '/characters/51.jai_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 52,
+        name: 'ALVARO',
+        image: '/characters/52.alvaro.png',
+        skillImage: '/characters/52.alvaro_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 53,
+        name: 'ANTONIO',
+        image: '/characters/53.antonio.png',
+        skillImage: '/characters/53.antonio_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 54,
+        name: 'PALOMA',
+        image: '/characters/54.paloma.png',
+        skillImage: '/characters/54.paloma_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 55,
+        name: 'MIGUEL',
+        image: '/characters/55.miguel.png',
+        skillImage: '/characters/55.miguel_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 56,
+        name: 'NIKITA',
+        image: '/characters/56.nikita.png',
+        skillImage: '/characters/56.nikita_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 57,
+        name: 'KAPELLA',
+        image: '/characters/57.kapella.png',
+        skillImage: '/characters/57.kapella_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 58,
+        name: 'JOSEPH',
+        image: '/characters/58.joseph.png',
+        skillImage: '/characters/58.joseph_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 59,
+        name: 'NATORA',
+        image: '/characters/59.natora.png',
+        skillImage: '/characters/59.natora_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 60,
+        name: 'A124',
+        image: '/characters/60.a124.png',
+        skillImage: '/characters/60.a124_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 61,
+        name: 'KLA',
+        image: '/characters/61.kla.png',
+        skillImage: '/characters/61.kla_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 62,
+        name: 'WUKONG',
+        image: '/characters/62.wukong.png',
+        skillImage: '/characters/62.wukong_skill.png',
+        type: 'active',
+        status: 'available'
+    },
+    {
+        id: 63,
+        name: 'OLIVIA',
+        image: '/characters/63.olivia.png',
+        skillImage: '/characters/63.olivia_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 64,
+        name: 'FORD',
+        image: '/characters/64.ford.png',
+        skillImage: '/characters/64.ford_skill.png',
+        type: 'passive',
+        status: 'available'
+    },
+    {
+        id: 65,
+        name: 'SHANI',
+        image: '/characters/65.shani.png',
+        skillImage: '/characters/65.shani_skill.png',
+        type: 'passive',
+        status: 'available'
+    }
 ]

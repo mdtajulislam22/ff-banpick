@@ -12,8 +12,9 @@ function JoinRoom({
 
             <div className="w-full max-w-md bg-white/10 border border-white/10 rounded-3xl p-8">
 
+                <img src="/FF_SHORT_LOGO.png" alt="FF" className="w-16 h-16 mx-auto mb-4" />
                 <h1 className="text-5xl font-bold text-center mb-2">
-                    FF Draft
+                    BanPick Arena
                 </h1>
 
                 <p className="text-center text-gray-400 mb-8">
