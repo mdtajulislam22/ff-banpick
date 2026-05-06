@@ -20,30 +20,32 @@ function DraftArena({
     flipCoin,
 }) {
 
-    const [selectedCharId, setSelectedCharId] =
-        useState(null)
+    // const [selectedCharId, setSelectedCharId] =
+    //     useState(null)
+    const [bannedCharacters, setBannedCharacters] =
+        useState([2, 5])
 
 
     // TIMER
-    useEffect(() => {
+    // useEffect(() => {
 
-        const timer = setInterval(() => {
+    //     const timer = setInterval(() => {
 
-            setTimeLeft(prev => {
+    //         setTimeLeft(prev => {
 
-                if (prev <= 1) {
-                    return 30
-                }
+    //             if (prev <= 1) {
+    //                 return 30
+    //             }
 
-                return prev - 1
+    //             return prev - 1
 
-            })
+    //         })
 
-        }, 1000)
+    //     }, 1000)
 
-        return () => clearInterval(timer)
+    //     return () => clearInterval(timer)
 
-    }, [])
+    // }, [])
 
     // MOCK BAN
     const handleConfirmBan = () => {
@@ -150,6 +152,11 @@ function DraftArena({
             : characters.filter(
                 c => c.type === 'passive'
             )
+    const isBanPhase =
+        room?.phase?.includes('ban')
+
+
+
 
     return (
 
@@ -173,7 +180,7 @@ function DraftArena({
                 <div className="absolute right-0 bottom-0 w-[500px] h-[500px] bg-red-500/10 blur-[150px] rounded-full"></div>
 
                 {/* PARTICLES */}
-                {Array.from({ length: 20 }).map((_, i) => (
+                {/* {Array.from({ length: 20 }).map((_, i) => (
 
                     <motion.div
                         key={i}
@@ -196,7 +203,7 @@ function DraftArena({
                         }}
                     />
 
-                ))}
+                ))} */}
 
             </div>
 
@@ -308,7 +315,7 @@ function DraftArena({
                                 duration: 1,
                             }}
 
-                            className={`text-7xl font-black mb-5 ${room?.timer <= 10
+                            className={`text-5xl font-black mb-5 ${room?.timer <= 10
                                 ? 'text-red-500'
                                 : 'text-white'
                                 }`}
@@ -319,23 +326,28 @@ function DraftArena({
                         </motion.div>
 
                         {/* coin toss  */}
-                        <motion.div
+                        {room?.phase === 'coin_toss' && (
 
-                            animate={{
-                                rotateY: room?.flipping ? 1440 : 0,
-                                scale: room?.flipping ? 1.2 : 1,
-                            }}
+                            <motion.div
 
-                            transition={{
-                                duration: 3,
-                            }}
+                                animate={{
+                                    rotateY: room?.flipping ? 1440 : 0,
+                                    scale: room?.flipping ? 1.2 : 1,
+                                }}
 
-                            className="w-36 h-36 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-2xl flex items-center justify-center text-4xl font-black mb-4"
-                        >
+                                transition={{
+                                    duration: 3,
+                                }}
 
-                            {room?.coinResult || 'FF'}
+                                className="w-36 h-36 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-2xl flex items-center justify-center text-4xl font-black mb-4"
+                            >
 
-                        </motion.div>
+                                {room?.coinResult || 'FF'}
+
+                            </motion.div>
+
+                        )}
+
 
 
                     </div>
@@ -348,30 +360,36 @@ function DraftArena({
                             const isSelected =
                                 selectedCharId === char.id
 
+                            const isBanned =
+                                bannedCharacters.includes(char.id)
+
                             return (
 
                                 <motion.div
                                     key={char.id}
 
-                                    whileHover={{
-                                        scale: 1.05,
-                                    }}
+                                    onClick={() => {
 
-                                    whileTap={{
-                                        scale: 0.95,
-                                    }}
+                                        if (isBanned) return
 
-                                    onClick={() =>
                                         setSelectedCharId(char.id)
-                                    }
 
-                                    className={`relative aspect-[3/4] cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300
+                                    }}
 
-                  ${isSelected
-                                            ? 'border-cyan-400 shadow-[0_0_20px_#00AFFF]'
+                                    className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all duration-300
+
+    ${isSelected
+                                            ? isBanPhase
+                                                ? 'border-red-500'
+                                                : 'border-cyan-400'
                                             : 'border-[#1a2332]'
                                         }
-                  `}
+
+    ${isBanned
+                                            ? 'opacity-40 grayscale cursor-not-allowed'
+                                            : 'cursor-pointer'
+                                        }
+    `}
                                 >
 
                                     {/* IMAGE */}
@@ -394,18 +412,52 @@ function DraftArena({
                                     </div>
 
                                     {/* SKILL */}
-                                    <div className="absolute top-2 right-2 w-8 h-8 bg-black/70 border border-cyan-400 rotate-45 flex items-center justify-center">
+                                    <div className={`absolute top-2 right-2 w-8 h-8 bg-black/70 border rotate-45 flex items-center justify-center
 
-                                        <div className="-rotate-45 text-cyan-400">
+    ${isBanPhase
+                                            ? 'border-red-500'
+                                            : 'border-cyan-400'
+                                        }
+    `}>
+
+                                        <div className={`${isBanPhase
+                                            ? 'text-red-400'
+                                            : 'text-cyan-400'
+                                            } -rotate-45`}>
+
                                             {getSkillIcon(char.type)}
+
                                         </div>
 
                                     </div>
 
                                     {/* SELECTED */}
-                                    {isSelected && (
+                                    {isSelected && !isBanned && (
 
-                                        <div className="absolute inset-0 border-4 border-cyan-400 rounded-xl"></div>
+                                        <div className={`absolute inset-0 border-4 rounded-xl
+
+        ${isBanPhase
+                                                ? 'border-red-500'
+                                                : 'border-cyan-400'
+                                            }
+        `}></div>
+
+                                    )}
+
+                                    {/* BANNED */}
+                                    {isBanned && (
+
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+
+                                            <div className="relative w-24 h-24">
+
+                                                <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 rotate-45 shadow-[0_0_20px_red]"></div>
+
+                                                <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-45 shadow-[0_0_20px_red]"></div>
+
+                                            </div>
+
+                                        </div>
 
                                     )}
 

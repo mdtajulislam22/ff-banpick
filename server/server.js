@@ -99,7 +99,7 @@ function startCoinToss(roomId) {
         rooms[roomId].phase =
             'active_ban_1'
 
-        rooms[roomId].timer = 30
+        rooms[roomId].timer = 60
 
         io.to(roomId).emit(
             'room_update',
@@ -165,7 +165,7 @@ io.on('connection', (socket) => {
 
                 countdown: 5,
 
-                timer: 30,
+                timer: 60,
 
                 currentTurn: null,
 

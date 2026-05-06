@@ -78,7 +78,7 @@ export const characters = [
         name: 'SUZY',
         image: '/characters/10.suzy.png',
         skillImage: '/characters/10.suzy_skill.png',
-        type: 'active',
+        type: 'passive',
         status: 'available'
     },
 

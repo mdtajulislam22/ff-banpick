@@ -116,7 +116,7 @@ function App() {
         <RotateDevice />
       )}
 
-      <div className="min-h-screen bg-[#050816] text-white p-5">
+      <div className="min-h-screen bg-[#050816] text-white">
 
         {!joined ? (
 
