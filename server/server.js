@@ -170,7 +170,7 @@ function resetRoom(roomId) {
 
     rooms[roomId].phase = 'waiting'
     rooms[roomId].countdown = 5
-    rooms[roomId].timer = 30
+    rooms[roomId].timer = 60
     rooms[roomId].currentTurn = null
     rooms[roomId].tossWinner = null
     rooms[roomId].coinResult = 'FF'
@@ -263,11 +263,7 @@ function startCoinToss(roomId) {
 
         emitRoom(roomId)
 
-        // startDraftPhase(
-        //     roomId,
-        //     'active_ban_1',
-        //     winner.socketId
-        // )
+
         rooms[roomId].flowIndex = 0
 
         startNextFlow(roomId)
@@ -308,7 +304,7 @@ function startNextFlow(roomId) {
 
     room.currentActionCount = 0
 
-    room.timer = 30
+    room.timer = 60
 
     // TURN
     const tossWinner =
@@ -454,7 +450,7 @@ io.on('connection', (socket) => {
 
                 countdown: 5,
 
-                timer: 30,
+                timer: 60,
 
                 currentTurn: null,
 
@@ -587,7 +583,7 @@ io.on('connection', (socket) => {
             }
             else {
 
-                room.timer = 30
+                room.timer = 60
 
                 emitRoom(roomId)
 
