@@ -217,9 +217,34 @@ function startDraftPhase(
 
             clearRoomTimers(roomId)
 
-            // later:
-            // auto ban
-            // next phase
+            const currentPlayer =
+                rooms[roomId].currentTurn
+
+            const otherPlayer =
+                rooms[roomId].players.find(
+                    p => p.socketId !== currentPlayer
+                )
+
+            // AUTO PASS
+            if (
+                rooms[roomId].phase === 'active_ban_1'
+            ) {
+
+                startDraftPhase(
+                    roomId,
+                    'active_ban_2',
+                    otherPlayer.socketId
+                )
+
+            }
+            else {
+
+                rooms[roomId].phase =
+                    'finished'
+
+                emitRoom(roomId)
+
+            }
 
         }
 
@@ -302,6 +327,73 @@ io.on('connection', (socket) => {
         ) {
 
             startCountdown(roomId)
+
+        }
+
+    })
+    socket.on('ban_character', ({
+        characterId
+    }) => {
+
+        try {
+
+            const roomId = socket.roomId
+
+            if (!roomExists(roomId)) return
+
+            const room = rooms[roomId]
+
+            // NOT YOUR TURN
+            if (
+                room.currentTurn !== socket.id
+            ) {
+                return
+            }
+
+            // already banned
+            if (
+                room.activeBans.includes(characterId)
+            ) {
+                return
+            }
+
+            // BAN CHARACTER
+            room.activeBans.push(characterId)
+
+            // SWITCH TURN
+            const otherPlayer =
+                room.players.find(
+                    p => p.socketId !== socket.id
+                )
+
+            // NEXT PHASE
+            if (
+                room.phase === 'active_ban_1'
+            ) {
+
+                startDraftPhase(
+                    roomId,
+                    'active_ban_2',
+                    otherPlayer.socketId
+                )
+
+            }
+            else {
+
+                clearRoomTimers(roomId)
+
+                room.phase = 'finished'
+
+            }
+
+            emitRoom(roomId)
+
+        } catch (err) {
+
+            console.log(
+                'Ban Error:',
+                err
+            )
 
         }
 

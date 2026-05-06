@@ -23,8 +23,10 @@ function DraftArena({
 
     const [selectedCharId, setSelectedCharId] =
         useState(null)
-    const [bannedCharacters, setBannedCharacters] =
-        useState([2, 5])
+
+    const isMyTurn =
+        socket.id === room?.currentTurn
+
 
 
     // TIMER
@@ -48,18 +50,15 @@ function DraftArena({
 
     // }, [])
 
-    // MOCK BAN
     const handleConfirmBan = () => {
+
+        if (!canInteract) return
 
         if (selectedCharId === null) return
 
-        console.log(
-            'BAN:',
-            selectedCharId
-        )
-
-        // next:
-        // socket.emit('ban_character')
+        socket.emit('ban_character', {
+            characterId: selectedCharId
+        })
 
         setSelectedCharId(null)
 
@@ -336,6 +335,18 @@ function DraftArena({
                         </div>
 
                     )}
+
+                    {/* my turn or not  */}
+                    <div className={`mb-4 text-xl font-bold
+${isMyTurn
+                            ? 'text-cyan-400'
+                            : 'text-red-400'
+                        }`}>
+                        {isMyTurn
+                            ? 'YOUR TURN'
+                            : 'OPPONENT TURN'}
+                    </div>
+
                     {/* CHARACTER GRID */}
                     <div className="grid grid-cols-5 gap-3 flex-1 overflow-y-auto pr-2">
 
@@ -345,7 +356,7 @@ function DraftArena({
                                 selectedCharId === char.id
 
                             const isBanned =
-                                bannedCharacters.includes(char.id)
+                                room?.activeBans?.includes(char.id)
 
                             return (
 
@@ -539,24 +550,7 @@ function DraftArena({
 
                     </div>
 
-                    {/* ROOM */}
-                    <div className="absolute top-5 left-5 bg-black/40 border border-white/10 px-5 py-2 rounded-xl backdrop-blur-xl">
 
-                        Room:
-                        <span className="text-cyan-400 ml-2">
-                            {roomId}
-                        </span>
-
-                    </div>
-
-                    {/* INVITE */}
-                    <button className="absolute top-5 right-5 bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-xl font-bold flex items-center gap-2">
-
-                        <Share2 size={16} />
-
-                        Invite
-
-                    </button>
 
                 </div>
 
