@@ -229,6 +229,8 @@ io.on('connection', (socket) => {
                 delete rooms[roomId]
             }
 
+            rooms[roomId].phase = 'waiting'
+
         }
 
     })

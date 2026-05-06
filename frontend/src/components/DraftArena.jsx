@@ -50,9 +50,13 @@ function DraftArena({
 
         if (selectedCharId === null) return
 
-        alert(
-            `Character ID ${selectedCharId} banned`
+        console.log(
+            'BAN:',
+            selectedCharId
         )
+
+        // next:
+        // socket.emit('ban_character')
 
         setSelectedCharId(null)
 
@@ -86,7 +90,10 @@ function DraftArena({
                         WAITING FOR OPPONENT
                     </h1>
 
-                    <p className="text-gray-400">
+                    <p className="text-gray-400 mb-3">
+                        <p className="text-cyan-400 text-xl font-bold">
+                            {room?.players?.[0]?.name}
+                        </p>
                         Share room code:
                         <span className="text-cyan-400 ml-2">
                             {roomId}
@@ -135,6 +142,14 @@ function DraftArena({
         )
 
     }
+    const visibleCharacters =
+        room?.phase?.includes('active')
+            ? characters.filter(
+                c => c.type === 'active'
+            )
+            : characters.filter(
+                c => c.type === 'passive'
+            )
 
     return (
 
@@ -284,7 +299,7 @@ function DraftArena({
                         {/* TIMER */}
                         <motion.div
 
-                            animate={timeLeft <= 10 ? {
+                            animate={room?.timer <= 10 ? {
                                 scale: [1, 1.1, 1],
                             } : {}}
 
@@ -293,17 +308,34 @@ function DraftArena({
                                 duration: 1,
                             }}
 
-                            className={`text-7xl font-black mb-5 ${timeLeft <= 10
+                            className={`text-7xl font-black mb-5 ${room?.timer <= 10
                                 ? 'text-red-500'
                                 : 'text-white'
                                 }`}
                         >
 
                             {room?.timer || 0}
+
                         </motion.div>
 
-                        {room?.coinResult || 'FF'}
+                        {/* coin toss  */}
+                        <motion.div
 
+                            animate={{
+                                rotateY: room?.flipping ? 1440 : 0,
+                                scale: room?.flipping ? 1.2 : 1,
+                            }}
+
+                            transition={{
+                                duration: 3,
+                            }}
+
+                            className="w-36 h-36 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 shadow-2xl flex items-center justify-center text-4xl font-black mb-4"
+                        >
+
+                            {room?.coinResult || 'FF'}
+
+                        </motion.div>
 
 
                     </div>
@@ -311,7 +343,7 @@ function DraftArena({
                     {/* CHARACTER GRID */}
                     <div className="grid grid-cols-5 gap-3 flex-1 overflow-y-auto pr-2">
 
-                        {characters.map((char) => {
+                        {visibleCharacters.map((char) => {
 
                             const isSelected =
                                 selectedCharId === char.id
