@@ -20,8 +20,8 @@ function DraftArena({
     flipCoin,
 }) {
 
-    // const [selectedCharId, setSelectedCharId] =
-    //     useState(null)
+    const [selectedCharId, setSelectedCharId] =
+        useState(null)
     const [bannedCharacters, setBannedCharacters] =
         useState([2, 5])
 
