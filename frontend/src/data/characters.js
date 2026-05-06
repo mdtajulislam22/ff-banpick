@@ -94,7 +94,7 @@ export const characters = [
         name: 'ORION',
         image: '/characters/12.orion.png',
         skillImage: '/characters/12.orion_skill.png',
-        type: 'passive',
+        type: 'active',
         status: 'available'
     },
     {
@@ -102,7 +102,7 @@ export const characters = [
         name: 'SANTONIO',
         image: '/characters/13.santonio.png',
         skillImage: '/characters/13.santonio_skill.png',
-        type: 'passive',
+        type: 'active',
         status: 'available'
     },
     {
@@ -118,7 +118,7 @@ export const characters = [
         name: 'TATSUYA',
         image: '/characters/15.tatsuya.png',
         skillImage: '/characters/15.tatsuya_skill.png',
-        type: 'passive',
+        type: 'active',
         status: 'available'
     },
     {

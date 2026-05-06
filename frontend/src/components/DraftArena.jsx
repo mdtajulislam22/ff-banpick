@@ -43,18 +43,11 @@ function DraftArena({
     }
 
     // ICONS
-    const getSkillIcon = (type) => {
-
-        switch (type) {
-
-            case 'active':
-                return <Flame size={14} />
-
-            default:
-                return <Zap size={14} />
-
-        }
-
+    const getSkillIcon = (id) => {
+        var char = characters.find(
+            c => c.id === id
+        )
+        return char ? char.skillImage : null
     }
 
     // WAITING FOR OPPONENT
@@ -136,6 +129,35 @@ function DraftArena({
 
     }
 
+    const isFinished =
+        room?.phase === 'finished'
+
+
+    const blueCharacters =
+        blueTeam
+            .map(getCharacterById)
+            .sort((a, b) => {
+
+                if (a.type === 'active') return -1
+                if (b.type === 'active') return 1
+
+                return 0
+
+            })
+
+
+    const redCharacters =
+        redTeam
+            .map(getCharacterById)
+            .sort((a, b) => {
+
+                if (a.type === 'active') return -1
+                if (b.type === 'active') return 1
+
+                return 0
+
+            })
+
     return (
 
         <div className="relative w-full h-screen overflow-hidden text-white">
@@ -199,7 +221,7 @@ function DraftArena({
                             <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-cyan-400">
 
                                 <img
-                                    src="https://i.pravatar.cc/150?img=12"
+                                    src="/avatar/avatar1.jpg"
                                     className="w-full h-full object-cover"
                                 />
 
@@ -242,7 +264,7 @@ function DraftArena({
 
                                     {pickedChar ? (
 
-                                        <div className="relative w-full h-full">
+                                        <div className="relative w-80 h-full">
 
                                             <img
                                                 src={pickedChar.image}
@@ -253,6 +275,11 @@ function DraftArena({
                                             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
 
                                             <div className="absolute bottom-2 left-2">
+                                                <img
+                                                    src={pickedChar.skillImage}
+                                                    alt={pickedChar.name}
+                                                    className="w-10 h-10 mb-2"
+                                                />
 
                                                 <p className="font-bold">
                                                     {pickedChar.name}
@@ -283,13 +310,13 @@ function DraftArena({
                         {/* here was roomid and invite link */}
 
                         {/* PHASE */}
-                        <div className="relative mb-5">
+                        <div className="relative mb-1">
 
                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-red-500 blur opacity-30"></div>
 
                             <div className="relative bg-[#150c2d] border-y border-cyan-400/40 px-16 py-3">
 
-                                <h1 className="text-2xl font-black tracking-[0.2em]">
+                                <h1 className="text-xl font-black tracking-[0.2em]">
                                     {
                                         room?.phase === 'active_ban_1'
                                             ? 'BAN ACTIVE SKILL'
@@ -312,7 +339,7 @@ function DraftArena({
                                 duration: 1,
                             }}
 
-                            className={`text-5xl font-black mb-5 ${room?.timer <= 10
+                            className={`text-5xl font-black mb-1 ${room?.timer <= 10
                                 ? 'text-red-500'
                                 : 'text-white'
                                 }`}
@@ -373,7 +400,7 @@ function DraftArena({
                     )}
 
                     {/* my turn or not  */}
-                    <div className={`mb-4 text-xl font-bold
+                    <div className={`text-lg font-bold
 ${isMyTurn
                             ? 'text-cyan-400'
                             : 'text-red-400'
@@ -384,143 +411,308 @@ ${isMyTurn
                     </div>
 
                     {/* CHARACTER GRID */}
-                    <div className="grid grid-cols-5 gap-3 flex-1 overflow-y-auto pr-2">
+                    {!isFinished && (
 
-                        {visibleCharacters.map((char) => {
+                        <div className="grid grid-cols-5 gap-2 flex-1 overflow-y-auto pr-2 auto-rows-[220px] custom-scrollbar">
 
-                            const isSelected =
-                                selectedCharId === char.id
+                            {visibleCharacters.map((char) => {
 
-                            const isBanned =
-                                room?.bannedCharacters?.includes(char.id)
-                            const isPicked =
-                                allPickedCharacters.includes(char.id)
-                            return (
+                                const isSelected =
+                                    selectedCharId === char.id
 
-                                <motion.div
-                                    key={char.id}
+                                const isBanned =
+                                    room?.bannedCharacters?.includes(char.id)
+                                const isPicked =
+                                    allPickedCharacters.includes(char.id)
+                                return (
 
-                                    onClick={() => {
+                                    <motion.div
+                                        key={char.id}
 
-                                        if (!canInteract) return
+                                        onClick={() => {
 
-                                        if (isBanned) return
+                                            if (!canInteract) return
 
-                                        if (isPicked) return
+                                            if (isBanned) return
 
-                                        setSelectedCharId(char.id)
+                                            if (isPicked) return
 
-                                    }}
+                                            setSelectedCharId(char.id)
 
-                                    className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all duration-300
+                                        }}
+
+                                        className={`relative aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all duration-300
 
     ${isSelected
-                                            ? isBanPhase
-                                                ? 'border-red-500'
-                                                : 'border-cyan-400'
-                                            : 'border-[#1a2332]'
-                                        }
+                                                ? isBanPhase
+                                                    ? 'border-red-500'
+                                                    : 'border-cyan-400'
+                                                : 'border-[#1a2332]'
+                                            }
 
 ${isBanned
-                                            ? 'opacity-40 grayscale cursor-not-allowed'
-                                            : isPicked
-                                                ? 'opacity-50 cursor-not-allowed'
-                                                : 'cursor-pointer'
-                                        }
+                                                ? 'opacity-40 grayscale cursor-not-allowed'
+                                                : isPicked
+                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    : 'cursor-pointer'
+                                            }
     `}
-                                >
+                                    >
 
-                                    {/* IMAGE */}
-                                    <img
-                                        src={char.image}
-                                        alt={char.name}
-                                        className="w-full h-full object-cover"
-                                    />
+                                        {/* IMAGE */}
+                                        <img
+                                            src={char.image}
+                                            alt={char.name}
+                                            className="w-full h-full object-cover"
+                                        />
 
-                                    {/* OVERLAY */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                                        {/* OVERLAY */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
 
-                                    {/* NAME */}
-                                    <div className="absolute bottom-2 left-0 w-full text-center">
+                                        {/* NAME */}
+                                        <div className="absolute bottom-2 left-0 w-full text-center">
 
-                                        <p className="text-sm font-bold">
-                                            {char.name}
-                                        </p>
-
-                                    </div>
-
-                                    {/* SKILL */}
-                                    <div className={`absolute top-2 right-2 w-8 h-8 bg-black/70 border rotate-45 flex items-center justify-center
-
-    ${isBanPhase
-                                            ? 'border-red-500'
-                                            : 'border-cyan-400'
-                                        }
-    `}>
-
-                                        <div className={`${isBanPhase
-                                            ? 'text-red-400'
-                                            : 'text-cyan-400'
-                                            } -rotate-45`}>
-
-                                            {getSkillIcon(char.type)}
+                                            <p className="text-sm font-bold">
+                                                {char.name}
+                                            </p>
 
                                         </div>
 
-                                    </div>
+                                        {/* SKILL */}
+                                        <div className={`absolute top-2 right-2 w-8 h-8 bg-black/70 border rotate-45 flex items-center justify-center
 
-                                    {/* SELECTED */}
-                                    {isSelected && !isBanned && (
-
-                                        <div className={`absolute inset-0 border-4 rounded-xl
-
-        ${isBanPhase
+    ${isBanPhase
                                                 ? 'border-red-500'
                                                 : 'border-cyan-400'
                                             }
+    `}>
+
+                                            <div className={`${isBanPhase
+                                                ? 'text-red-400'
+                                                : 'text-cyan-400'
+                                                } -rotate-45`}>
+
+
+                                                <img
+                                                    src={getSkillIcon(char.id)}
+                                                    alt={getSkillIcon(char.id)}
+                                                    className="w-8 h-8"
+                                                />
+
+                                            </div>
+
+                                        </div>
+
+                                        {/* SELECTED */}
+                                        {isSelected && !isBanned && (
+
+                                            <div className={`absolute inset-0 border-4 rounded-xl
+
+        ${isBanPhase
+                                                    ? 'border-red-500'
+                                                    : 'border-cyan-400'
+                                                }
         `}></div>
 
-                                    )}
+                                        )}
 
-                                    {/* BANNED */}
-                                    {isBanned && (
+                                        {/* BANNED */}
+                                        {isBanned && (
 
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
 
-                                            <div className="relative w-24 h-24">
+                                                <div className="relative w-24 h-24">
 
-                                                <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 rotate-45 shadow-[0_0_20px_red]"></div>
+                                                    <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 rotate-45 shadow-[0_0_20px_red]"></div>
 
-                                                <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-45 shadow-[0_0_20px_red]"></div>
+                                                    <div className="absolute top-1/2 left-0 w-full h-1 bg-red-500 -rotate-45 shadow-[0_0_20px_red]"></div>
 
-                                            </div>
-
-                                        </div>
-
-                                    )}
-
-                                    {/* PICKED */}
-                                    {isPicked && !isBanned && (
-
-                                        <div className="absolute inset-0 bg-cyan-500/20 border-4 border-cyan-400">
-
-                                            <div className="absolute top-2 left-2 px-2 py-1 bg-cyan-500 text-black text-xs font-black rounded">
-
-                                                PICKED
+                                                </div>
 
                                             </div>
 
-                                        </div>
+                                        )}
 
-                                    )}
+                                        {/* PICKED */}
+                                        {isPicked && !isBanned && (
 
-                                </motion.div>
+                                            <div className="absolute inset-0 bg-cyan-500/20 border-4 border-cyan-400">
 
-                            )
+                                                <div className="absolute top-2 left-2 px-2 py-1 bg-cyan-500 text-black text-xs font-black rounded">
 
-                        })}
+                                                    PICKED
 
-                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        )}
+
+                                    </motion.div>
+
+                                )
+
+                            })}
+
+                        </div>
+                    )}
+                    {isFinished && (
+
+                        <div className="absolute inset-0 z-40 bg-[#050816]/95 backdrop-blur-md flex items-center justify-center px-10">
+
+                            <div className="w-full max-w-7xl grid grid-cols-3 items-center gap-10">
+
+                                {/* BLUE TEAM */}
+                                <div>
+
+                                    <h1 className="text-4xl font-black text-cyan-400 mb-8">
+                                        BLUE TEAM
+                                    </h1>
+
+                                    <div className="space-y-4">
+
+                                        {blueCharacters.map((char, i) => {
+
+                                            if (!char) return null
+
+                                            return (
+
+                                                <div
+                                                    key={char.id}
+                                                    className="relative h-28 rounded-2xl overflow-hidden border border-cyan-400/40 bg-black/40 shadow-[0_0_30px_rgba(0,255,255,0.15)]"
+                                                >
+
+                                                    <img
+                                                        src={char.image}
+                                                        alt={char.name}
+                                                        className="absolute inset-0 w-full h-full object-cover object-top opacity-70"
+                                                    />
+
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent"></div>
+
+                                                    <div className="relative z-10 h-full flex items-center gap-5 px-5">
+
+                                                        {/* SKILL */}
+                                                        <div className="w-14 h-14 rotate-45 overflow-hidden border border-cyan-400 bg-black/70">
+
+                                                            <img
+                                                                src={char.skillImage}
+                                                                alt={char.name}
+                                                                className="w-full h-full object-cover -rotate-45 scale-150"
+                                                            />
+
+                                                        </div>
+
+                                                        {/* INFO */}
+                                                        <div>
+
+                                                            <p className="text-2xl font-black">
+                                                                {char.name}
+                                                            </p>
+
+                                                            <p className="text-cyan-300 text-sm uppercase tracking-widest">
+                                                                {char.type}
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            )
+
+                                        })}
+
+                                    </div>
+
+                                </div>
+
+                                {/* CENTER VS */}
+                                <div className="flex flex-col items-center justify-center">
+
+                                    <h1 className="text-8xl font-black text-white/90 mb-4">
+                                        VS
+                                    </h1>
+
+                                    <p className="text-gray-400 text-lg tracking-[0.4em] uppercase">
+                                        Draft Complete
+                                    </p>
+
+                                </div>
+
+                                {/* RED TEAM */}
+                                <div>
+
+                                    <h1 className="text-4xl font-black text-red-400 mb-8 text-right">
+                                        RED TEAM
+                                    </h1>
+
+                                    <div className="space-y-4">
+
+                                        {redCharacters.map((char, i) => {
+
+                                            if (!char) return null
+
+                                            return (
+
+                                                <div
+                                                    key={char.id}
+                                                    className="relative h-28 rounded-2xl overflow-hidden border border-red-400/40 bg-black/40 shadow-[0_0_30px_rgba(255,0,0,0.15)]"
+                                                >
+
+                                                    <img
+                                                        src={char.image}
+                                                        alt={char.name}
+                                                        className="absolute inset-0 w-full h-full object-cover object-top opacity-70"
+                                                    />
+
+                                                    <div className="absolute inset-0 bg-gradient-to-l from-black via-black/40 to-transparent"></div>
+
+                                                    <div className="relative z-10 h-full flex items-center justify-end gap-5 px-5">
+
+                                                        {/* INFO */}
+                                                        <div className="text-right">
+
+                                                            <p className="text-2xl font-black">
+                                                                {char.name}
+                                                            </p>
+
+                                                            <p className="text-red-300 text-sm uppercase tracking-widest">
+                                                                {char.type}
+                                                            </p>
+
+                                                        </div>
+
+                                                        {/* SKILL */}
+                                                        <div className="w-14 h-14 rotate-45 overflow-hidden border border-red-400 bg-black/70">
+
+                                                            <img
+                                                                src={char.skillImage}
+                                                                alt={char.name}
+                                                                className="w-full h-full object-cover -rotate-45 scale-150"
+                                                            />
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            )
+
+                                        })}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
 
                     {/* ACTION */}
                     <div className="flex justify-center mt-5">
@@ -570,7 +762,7 @@ ${isBanned
                             <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-red-400">
 
                                 <img
-                                    src="https://i.pravatar.cc/150?img=32"
+                                    src="/avatar/avatar2.jpg"
                                     className="w-full h-full object-cover"
                                 />
 
@@ -623,7 +815,12 @@ ${isBanned
 
                                             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
 
-                                            <div className="absolute bottom-2 left-2">
+                                            <div className="absolute bottom-2 right-2">
+                                                <img
+                                                    src={pickedChar.skillImage}
+                                                    alt={pickedChar.name}
+                                                    className="w-10 h-10 mb-2 float-right"
+                                                />
 
                                                 <p className="font-bold">
                                                     {pickedChar.name}

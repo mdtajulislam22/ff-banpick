@@ -294,7 +294,7 @@ function startNextFlow(roomId) {
     }
 
     room.phase =
-        `${flow.action}_${flow.type}`
+        `${flow.action} ${flow.type}`
 
     room.currentAction =
         flow.action
@@ -354,76 +354,6 @@ function startNextFlow(roomId) {
 
 }
 
-// function startDraftPhase(
-//     roomId,
-//     phase,
-//     currentTurn
-// ) {
-
-//     if (!roomExists(roomId)) return
-
-//     clearRoomTimers(roomId)
-
-//     rooms[roomId].phase = phase
-//     rooms[roomId].currentTurn = currentTurn
-//     rooms[roomId].timer = 30
-
-//     emitRoom(roomId)
-
-//     rooms[roomId].interval = setInterval(() => {
-
-//         if (!roomExists(roomId)) return
-
-//         if (rooms[roomId].players.length < 2) {
-
-//             resetRoom(roomId)
-//             return
-
-//         }
-
-//         rooms[roomId].timer--
-
-//         emitRoom(roomId)
-
-//         if (rooms[roomId].timer <= 0) {
-
-//             clearRoomTimers(roomId)
-
-//             const currentPlayer =
-//                 rooms[roomId].currentTurn
-
-//             const otherPlayer =
-//                 rooms[roomId].players.find(
-//                     p => p.socketId !== currentPlayer
-//                 )
-
-//             // AUTO PASS
-//             if (
-//                 rooms[roomId].phase === 'active_ban_1'
-//             ) {
-
-//                 startDraftPhase(
-//                     roomId,
-//                     'active_ban_2',
-//                     otherPlayer.socketId
-//                 )
-
-//             }
-//             else {
-
-//                 rooms[roomId].phase =
-//                     'finished'
-
-//                 emitRoom(roomId)
-
-//             }
-
-//         }
-
-//     }, 1000)
-
-// }
-
 io.on('connection', (socket) => {
 
     console.log('Connected:', socket.id)
@@ -460,13 +390,6 @@ io.on('connection', (socket) => {
 
                 flipping: false,
 
-                // activeBans: [],
-
-                // activePicks: [],
-
-                // passiveBans: [],
-
-                // passivePicks: [],
                 bannedCharacters: [],
                 pickedCharacters: {
                     blue: [],
@@ -599,73 +522,7 @@ io.on('connection', (socket) => {
         }
 
     })
-    // socket.on('ban_character', ({
-    //     characterId
-    // }) => {
 
-    //     try {
-
-    //         const roomId = socket.roomId
-
-    //         if (!roomExists(roomId)) return
-
-    //         const room = rooms[roomId]
-
-    //         // NOT YOUR TURN
-    //         if (
-    //             room.currentTurn !== socket.id
-    //         ) {
-    //             return
-    //         }
-
-    //         // already banned
-    //         if (
-    //             room.activeBans.includes(characterId)
-    //         ) {
-    //             return
-    //         }
-
-    //         // BAN CHARACTER
-    //         room.activeBans.push(characterId)
-
-    //         // SWITCH TURN
-    //         const otherPlayer =
-    //             room.players.find(
-    //                 p => p.socketId !== socket.id
-    //             )
-
-    //         // NEXT PHASE
-    //         if (
-    //             room.phase === 'active_ban_1'
-    //         ) {
-
-    //             // startDraftPhase(
-    //             //     roomId,
-    //             //     'active_ban_2',
-    //             //     otherPlayer.socketId
-    //             // )
-
-    //         }
-    //         else {
-
-    //             clearRoomTimers(roomId)
-
-    //             room.phase = 'finished'
-
-    //         }
-
-    //         emitRoom(roomId)
-
-    //     } catch (err) {
-
-    //         console.log(
-    //             'Ban Error:',
-    //             err
-    //         )
-
-    //     }
-
-    // })
 
     socket.on('disconnect', () => {
 

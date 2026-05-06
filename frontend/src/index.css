@@ -6,3 +6,25 @@ body {
   color: white;
   font-family: sans-serif;
 }
+
+/* SCROLLBAR */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(79,
+      15,
+      5,
+      0.6);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 15, 5, 0.6);
+}
