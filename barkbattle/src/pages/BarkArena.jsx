@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-
 import { motion, AnimatePresence } from 'framer-motion'
-
 import { socket } from '../socket'
+import { DoorOpen } from 'lucide-react'
+
 
 export default function BarkArena({
     room,
@@ -171,8 +171,8 @@ export default function BarkArena({
                     socket.disconnect()
                     window.location.reload()
                 }}
-                className="absolute top-4 left-4 z-50 px-5 py-2 bg-red-500 border-[4px] border-black rounded-xl text-xl font-black text-white shadow-xl hover:scale-105 active:scale-95 transition-all">
-                EXIT
+                className="absolute top-4 left-4 z-50 w-14 h-14 text-xl font-black text-white hover:scale-105 active:scale-95 transition-all">
+                <DoorOpen size={28} />
             </button>
 
 

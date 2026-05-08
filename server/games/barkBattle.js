@@ -51,6 +51,8 @@ module.exports = (io, socket) => {
 
         rooms[roomId].winner = null
 
+        rooms[roomId].rematchVotes = []
+
         rooms[roomId].players.forEach(player => {
             player.ready = false
             player.volume = 0
@@ -207,6 +209,8 @@ module.exports = (io, socket) => {
 
                 winner: null,
 
+                rematchVotes: [],
+
                 interval: null,
 
             }
@@ -262,6 +266,56 @@ module.exports = (io, socket) => {
             startCountdown(roomId)
 
         }
+
+    })
+
+    socket.on('bark:play_again', () => {
+
+        const roomId = socket.roomId
+
+        if (!roomExists(roomId)) return
+
+        const room = rooms[roomId]
+
+        // PREVENT DUPLICATE
+        if (
+            room.rematchVotes.includes(
+                socket.id
+            )
+        ) {
+            return
+        }
+
+        room.rematchVotes.push(socket.id)
+
+        // BOTH ACCEPTED
+        if (
+            room.rematchVotes.length === 2
+        ) {
+
+            room.phase = 'waiting'
+
+            room.countdown = 3
+
+            room.battleTimer = 30
+
+            room.pressure = 50
+
+            room.winner = null
+
+            room.rematchVotes = []
+
+            room.players.forEach(player => {
+
+                player.ready = false
+
+                player.volume = 0
+
+            })
+
+        }
+
+        emitRoom(roomId)
 
     })
 

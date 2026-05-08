@@ -5,7 +5,7 @@ import {
     AnimatePresence
 } from 'framer-motion'
 
-import { Maximize } from 'lucide-react'
+import { Expand } from 'lucide-react'
 
 
 function JoinRoom({
@@ -123,7 +123,7 @@ function JoinRoom({
 
         <div className="relative w-screen h-screen overflow-hidden">
             {/* FULLSCREEN */}
-            <button onClick={enterFullscreen} className="    absolute    top-4    right-4    z-50    w-14    h-14 text-white"><Maximize size={28} /></button>
+            <button onClick={enterFullscreen} className="    absolute    top-4    right-4    z-50    w-14    h-14 text-white"> <Expand size={28} /></button>
 
             {/* BACKGROUND */}
             <img
