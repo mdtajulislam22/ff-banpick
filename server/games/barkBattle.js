@@ -103,88 +103,70 @@ module.exports = (io, socket) => {
 
         clearTimers(roomId)
 
-        rooms[roomId].phase = 'battle'
+        const room = rooms[roomId]
 
-        rooms[roomId].battleTimer = 30
-
-        rooms[roomId].pressure = 50
+        room.phase = 'battle'
+        room.battleTimer = 30
+        room.pressure = 50
 
         emitRoom(roomId)
 
         const startTime = Date.now()
-        rooms[roomId].interval =
-            setInterval(() => {
-                const elapsed =
-                    Math.floor(
-                        (Date.now() - startTime) / 1000
-                    )
 
-                room.battleTimer =
-                    Math.max(30 - elapsed, 0)
+        room.interval = setInterval(() => {
 
-                if (!roomExists(roomId)) return
+            if (!roomExists(roomId)) return
 
-                const room = rooms[roomId]
+            const room = rooms[roomId]
 
+            const elapsed = Math.floor(
+                (Date.now() - startTime) / 1000
+            )
 
-                const p1 = room.players[0]
-                const p2 = room.players[1]
+            room.battleTimer = Math.max(
+                30 - elapsed,
+                0
+            )
 
-                if (p1 && p2) {
+            const p1 = room.players[0]
+            const p2 = room.players[1]
 
-                    const difference =
-                        (p1.volume || 0) -
-                        (p2.volume || 0)
-
-                    room.pressure += difference * 0.05
-
-                    if (room.pressure < 0)
-                        room.pressure = 0
-
-                    if (room.pressure > 100)
-                        room.pressure = 100
-
-                    // INSTANT WIN
-                    if (room.pressure <= 0) {
-
-                        room.phase = 'finished'
-                        room.winner = p2.socketId
-
-                        clearTimers(roomId)
-
-                    }
-
-                    if (room.pressure >= 100) {
-
-                        room.phase = 'finished'
-                        room.winner = p1.socketId
-
-                        clearTimers(roomId)
-
-                    }
-
+            if (p1 && p2) {
+                const difference =
+                    (p1.volume || 0) -
+                    (p2.volume || 0)
+                room.pressure +=
+                    difference * 0.05
+                if (room.pressure < 0) {
+                    room.pressure = 0
                 }
-
-                // TIME END
-                if (room.battleTimer <= 0) {
-
+                if (room.pressure > 100) {
+                    room.pressure = 100
+                }
+                // INSTANT WIN
+                if (room.pressure <= 0) {
                     room.phase = 'finished'
-
-                    if (room.pressure > 50) {
-                        room.winner = p1.socketId
-                    }
-                    else {
-                        room.winner = p2.socketId
-                    }
-
+                    room.winner = p2.socketId
                     clearTimers(roomId)
-
                 }
+                if (room.pressure >= 100) {
+                    room.phase = 'finished'
+                    room.winner = p1.socketId
+                    clearTimers(roomId)
+                }
+            }
 
-                emitRoom(roomId)
-
-            }, 100)
-
+            // TIME END
+            if (room.battleTimer <= 0) {
+                room.phase = 'finished'
+                room.winner =
+                    room.pressure >= 50
+                        ? p1.socketId
+                        : p2.socketId
+                clearTimers(roomId)
+            }
+            emitRoom(roomId)
+        }, 100)
     }
 
     // JOIN ROOM
