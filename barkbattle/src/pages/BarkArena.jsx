@@ -165,6 +165,16 @@ export default function BarkArena({
     return (
 
         <div className="relative w-screen h-screen overflow-hidden bg-[#e9dcc0] text-black">
+            {/* EXIT */}
+            <button
+                onClick={() => {
+                    socket.disconnect()
+                    window.location.reload()
+                }}
+                className="absolute top-4 left-4 z-50 px-5 py-2 bg-red-500 border-[4px] border-black rounded-xl text-xl font-black text-white shadow-xl hover:scale-105 active:scale-95 transition-all">
+                EXIT
+            </button>
+
 
             {/* BACKGROUND */}
             <img
@@ -406,7 +416,7 @@ export default function BarkArena({
                     {/* BARK WAVE */}
                     <AnimatePresence>
 
-                        {leftVolume > 20 && (
+                        {leftVolume > 50 && (
 
                             <motion.div
                                 initial={{
@@ -424,7 +434,7 @@ export default function BarkArena({
                                     duration: 0.7,
                                     repeat: Infinity
                                 }}
-                                className="absolute inset-0 rounded-full border-[10px] border-black"
+                                className="absolute inset-0 rounded-full border-[1px] border-black"
                             ></motion.div>
 
                         )}
@@ -486,7 +496,7 @@ export default function BarkArena({
                     {/* BARK WAVE */}
                     <AnimatePresence>
 
-                        {rightVolume > 20 && (
+                        {rightVolume > 50 && (
 
                             <motion.div
                                 initial={{
@@ -504,7 +514,7 @@ export default function BarkArena({
                                     duration: 0.7,
                                     repeat: Infinity
                                 }}
-                                className="absolute inset-0 rounded-full border-[10px] border-black"
+                                className="absolute inset-0 rounded-full border-[1px] border-black"
                             ></motion.div>
 
                         )}
@@ -629,7 +639,7 @@ export default function BarkArena({
                                 <img
                                     src={loserPlayer.image}
                                     alt=""
-                                    className="w-72 h-72 rounded-full object-cover border-[10px] border-red-500"
+                                    className="w-48 h-48 rounded-full object-cover border-[10px] border-red-500"
                                 />
 
                             </motion.div>
@@ -681,7 +691,7 @@ export default function BarkArena({
                                     <img
                                         src={winnerPlayer.image}
                                         alt=""
-                                        className="relative z-10 w-96 h-96 rounded-full object-cover border-[12px] border-yellow-400 shadow-[0_0_80px_rgba(255,255,0,0.6)]"
+                                        className="relative z-10 w-76 h-76 rounded-full object-cover border-[12px] border-yellow-400 shadow-[0_0_80px_rgba(255,255,0,0.6)]"
                                     />
 
                                 </motion.div>
@@ -690,12 +700,12 @@ export default function BarkArena({
                                     WINNER
                                 </h1>
 
-                                <button
-                                    onClick={() => {
-                                        window.location.reload()
-                                    }}
-                                    className="mt-10 px-16 py-5 bg-yellow-400 border-[6px] border-black rounded-3xl text-4xl font-black"
-                                >
+                                <button onClick={() => {
+                                    socket.emit(
+                                        'bark:play_again'
+                                    )
+                                }}
+                                    className="    mt-10    px-16    py-5    bg-yellow-400    border-[6px]    border-black    rounded-3xl    text-4xl    font-black    hover:scale-105    active:scale-95    transition-all    "    >
                                     PLAY AGAIN
                                 </button>
 
