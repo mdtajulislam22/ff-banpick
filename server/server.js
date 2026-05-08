@@ -5,6 +5,7 @@ const cors = require('cors')
 
 // GAME MODULES
 const ffDraft = require('./games/ffDraft')
+const barkBattle = require('./games/barkBattle')
 
 const app = express()
 
@@ -33,6 +34,9 @@ io.on('connection', (socket) => {
 
     // FREE FIRE DRAFT
     ffDraft(io, socket)
+
+    //BARK BATTLE
+    barkBattle(io, socket)
 
 })
 
