@@ -18,7 +18,13 @@ function App() {
     useState('')
 
   const [playerImage, setPlayerImage] =
-    useState(null)
+    useState(() => {
+
+      return localStorage.getItem(
+        'barkbattle-profile-image'
+      ) || null
+
+    })
 
   const [isMobilePortrait,
     setIsMobilePortrait] =
@@ -74,11 +80,25 @@ function App() {
   const joinRoom = () => {
 
     if (!roomId.trim()) {
-      return alert('Enter room ID')
+      return window.dispatchEvent(
+        new CustomEvent('show-toast', {
+          detail: {
+            message: 'Enter room ID',
+            type: 'error'
+          }
+        })
+      )
     }
 
     if (!playerImage) {
-      return alert('Upload image')
+      return window.dispatchEvent(
+        new CustomEvent('show-toast', {
+          detail: {
+            message: 'Upload profile image',
+            type: 'error'
+          }
+        })
+      )
     }
 
     socket.emit('bark:join', {
