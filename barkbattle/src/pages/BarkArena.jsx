@@ -173,7 +173,7 @@ export default function BarkArena({
                 className="absolute inset-0 w-full h-full object-cover"
             />
 
-            <div className="absolute inset-0 bg-[#f3ead6]/50"></div>
+            {/* <div className="absolute inset-0 bg-[#f3ead6]/50"></div> */}
 
             {/* TOP PRESSURE BAR */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[75%]">
@@ -181,15 +181,64 @@ export default function BarkArena({
                 <div className="relative h-12 border-4 border-black rounded-full overflow-hidden bg-black/20 shadow-2xl">
 
                     {/* GREEN */}
+                    {/* GREEN SIDE */}
                     <motion.div
                         animate={{
                             width: `${pressure}%`
                         }}
                         transition={{
-                            duration: 0.1
+                            duration: 0.08
                         }}
-                        className="absolute left-0 top-0 h-full bg-green-500"
-                    ></motion.div>
+                        className="
+
+    absolute
+    left-0
+    top-0
+    h-full
+
+    overflow-hidden
+
+    rounded-r-full
+
+    "
+
+                        style={{
+
+                            background:
+                                `
+            repeating-linear-gradient(
+                -45deg,
+                #58d94f,
+                #58d94f 12px,
+                #6fe865 12px,
+                #6fe865 24px
+            )
+            `,
+
+                            boxShadow:
+                                `
+            inset 0 6px 10px rgba(255,255,255,0.35),
+            inset 0 -6px 10px rgba(0,0,0,0.25)
+            `
+
+                        }}
+
+                    >
+
+                        {/* GLOSS */}
+                        <div className="
+
+    absolute
+    top-0
+    left-0
+    w-full
+    h-1/2
+
+    bg-white/20
+
+    "></div>
+
+                    </motion.div>
 
                     {/* RED */}
                     <motion.div
@@ -197,10 +246,58 @@ export default function BarkArena({
                             width: `${100 - pressure}%`
                         }}
                         transition={{
-                            duration: 0.1
+                            duration: 0.08
                         }}
-                        className="absolute right-0 top-0 h-full bg-red-500"
-                    ></motion.div>
+                        className="
+
+    absolute
+    right-0
+    top-0
+    h-full
+
+    overflow-hidden
+
+    rounded-l-full
+
+    "
+
+                        style={{
+
+                            background:
+                                `
+            repeating-linear-gradient(
+                -45deg,
+                #ff5a3c,
+                #ff5a3c 12px,
+                #ff7a5c 12px,
+                #ff7a5c 24px
+            )
+            `,
+
+                            boxShadow:
+                                `
+            inset 0 6px 10px rgba(255,255,255,0.35),
+            inset 0 -6px 10px rgba(0,0,0,0.25)
+            `
+
+                        }}
+
+                    >
+
+                        {/* GLOSS */}
+                        <div className="
+
+    absolute
+    top-0
+    left-0
+    w-full
+    h-1/2
+
+    bg-white/20
+
+    "></div>
+
+                    </motion.div>
 
                     {/* CENTER DOT */}
                     <motion.div
@@ -452,7 +549,7 @@ export default function BarkArena({
 
                     <div className="text-center">
 
-                        <h1 className="text-7xl font-black mb-4">
+                        <h1 className="text-5xl font-black mb-4">
                             WAITING FOR OPPONENT
                         </h1>
 
