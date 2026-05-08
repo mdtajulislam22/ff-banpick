@@ -89,7 +89,7 @@ function App() {
       return alert('Enter room name')
     }
 
-    socket.emit('join_room', {
+    socket.emit('draft:join', {
       roomId,
       player: {
         name: playerName,

@@ -34,7 +34,7 @@ function DraftArena({
 
         if (selectedCharId === null) return
 
-        socket.emit('draft_action', {
+        socket.emit('draft:action', {
             characterId: selectedCharId
         })
 
