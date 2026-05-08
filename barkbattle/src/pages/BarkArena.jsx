@@ -353,13 +353,14 @@ export default function BarkArena({
             {/* ROOM */}
             <div className="absolute bottom-10 left-10 z-20">
 
-                <h1 className="text-4xl font-black">
+                <h1 className="text-xl font-black">
                     Room: {roomId}
                 </h1>
 
                 <div className="mt-4 flex items-center gap-3">
 
-                    <div className="w-6 h-6 rounded-full bg-black"></div>
+                    {/* <div className="w-6 h-6 rounded-full bg-black"></div> */}
+                    <img src="/microphone.png" alt="" className="w-8 h-8" />
 
                     <div className="w-48 h-5 border-2 border-black bg-white overflow-hidden rounded-full">
 
@@ -374,7 +375,7 @@ export default function BarkArena({
 
                 </div>
 
-                <p className="mt-2 font-bold text-lg">
+                <p className="mt-2 font-bold text-md">
                     {micEnabled
                         ? 'Microphone Ready'
                         : 'Checking microphone...'}
@@ -383,7 +384,7 @@ export default function BarkArena({
             </div>
 
             {/* LEFT PLAYER */}
-            <div className="absolute left-24 top-1/2 -translate-y-1/2 z-10">
+            <div className="absolute left-48 top-1/2 -translate-y-1/2 z-10">
 
                 <motion.div
                     animate={{
@@ -430,7 +431,7 @@ export default function BarkArena({
 
                     </AnimatePresence>
 
-                    <div className="w-72 h-72 rounded-full overflow-hidden border-[10px] border-black shadow-2xl bg-white">
+                    <div className="w-48 h-48 rounded-full overflow-hidden border-[4px] border-black shadow-xl bg-white">
 
                         {leftPlayer?.image ? (
 
@@ -463,7 +464,7 @@ export default function BarkArena({
             </div>
 
             {/* RIGHT PLAYER */}
-            <div className="absolute right-24 top-1/2 -translate-y-1/2 z-10">
+            <div className="absolute right-48 top-1/2 -translate-y-1/2 z-10">
 
                 <motion.div
                     animate={{
@@ -510,7 +511,7 @@ export default function BarkArena({
 
                     </AnimatePresence>
 
-                    <div className="w-72 h-72 rounded-full overflow-hidden border-[10px] border-black shadow-2xl bg-white">
+                    <div className="w-48 h-48 rounded-full overflow-hidden border-[4px] border-black shadow-xl bg-white">
 
                         {rightPlayer?.image ? (
 
