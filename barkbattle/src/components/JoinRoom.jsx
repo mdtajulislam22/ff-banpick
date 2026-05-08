@@ -5,6 +5,8 @@ import {
     AnimatePresence
 } from 'framer-motion'
 
+import { Maximize } from 'lucide-react'
+
 
 function JoinRoom({
 
@@ -38,6 +40,29 @@ function JoinRoom({
             setToast(null)
 
         }, 2500)
+
+    }
+
+    const enterFullscreen = async () => {
+
+        const element =
+            document.documentElement
+
+        try {
+
+            if (
+                element.requestFullscreen
+            ) {
+
+                await element.requestFullscreen()
+
+            }
+
+        } catch (err) {
+
+            console.log(err)
+
+        }
 
     }
 
@@ -97,6 +122,8 @@ function JoinRoom({
     return (
 
         <div className="relative w-screen h-screen overflow-hidden">
+            {/* FULLSCREEN */}
+            <button onClick={enterFullscreen} className="    absolute    top-4    right-4    z-50    w-14    h-14 text-white"><Maximize size={28} /></button>
 
             {/* BACKGROUND */}
             <img
@@ -134,7 +161,7 @@ function JoinRoom({
 
                         <div className="relative">
 
-                            <div className="w-44 h-44 rounded-full overflow-hidden border-[8px] border-black bg-white shadow-xl">
+                            <div className="w-44 h-44 rounded-full overflow-hidden border-[4px] border-black bg-white shadow-xl">
 
                                 {playerImage ? (
 
@@ -156,7 +183,7 @@ function JoinRoom({
 
                             </div>
 
-                            <label className="absolute bottom-0 right-0 w-14 h-14 rounded-full bg-yellow-400 border-4 border-black flex items-center justify-center cursor-pointer text-2xl hover:scale-105 transition-all">
+                            <label className="absolute bottom-0 right-0 w-14 h-14 rounded-full bg-yellow-400 border-2 border-black flex items-center justify-center cursor-pointer text-2xl hover:scale-105 transition-all">
 
                                 📷
 
