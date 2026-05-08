@@ -111,14 +111,21 @@ module.exports = (io, socket) => {
 
         emitRoom(roomId)
 
+        const startTime = Date.now()
         rooms[roomId].interval =
             setInterval(() => {
+                const elapsed =
+                    Math.floor(
+                        (Date.now() - startTime) / 1000
+                    )
+
+                room.battleTimer =
+                    Math.max(30 - elapsed, 0)
 
                 if (!roomExists(roomId)) return
 
                 const room = rooms[roomId]
 
-                room.battleTimer--
 
                 const p1 = room.players[0]
                 const p2 = room.players[1]
